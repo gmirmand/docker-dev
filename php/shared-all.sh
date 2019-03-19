@@ -55,4 +55,10 @@ touch /root/custom_crontab \
   && /usr/bin/crontab -u www-data /root/custom_crontab
 
 # Update site's directory permissions
-chown -R www-data /var/www/
+chown -R www-data:www-data /var/www/html
+
+# Add the host user to the containers as "hostuser"
+echo 'adi:x:1000:1000:Adi Naidu:/home/adi:/bin/bash' >> /etc/passwd
+
+# Add the host user to the 'www-data' group
+usermod -aG www-data hostuser
