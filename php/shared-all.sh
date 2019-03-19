@@ -62,3 +62,6 @@ echo 'adi:x:1000:1000:Adi Naidu:/home/adi:/bin/bash' >> /etc/passwd
 
 # Add the host user to the 'www-data' group
 usermod -aG www-data hostuser
+
+# Grant write permissions on the html dir to the www-data group
+chmod -R g+w /var/www/html
