@@ -72,6 +72,25 @@ services:
         - CUSTOM_USER_NAME=${CUSTOM_USER_NAME}
         - CUSTOM_UID=${CUSTOM_UID}
         - CUSTOM_GID=${CUSTOM_GID}
+    restart: ${DOCKER_RESTART}
+    volumes:
+      - ${DOCUMENTROOT}:/var/www/html:delegated
+    networks:
+      lde-network:
+    user: ${CUSTOM_UID}:${CUSTOM_GID}
+
+  # PHP 7.4 ---------------------------------------------------
+  php74-fpm:
+    container_name: php74
+    hostname: php74
+    build:
+      context: ./php
+      dockerfile: ./74/Dockerfile
+      args:
+        - EXTRA_CMDS=${EXTRA_CMDS_PHP74}
+        - CUSTOM_USER_NAME=${CUSTOM_USER_NAME}
+        - CUSTOM_UID=${CUSTOM_UID}
+        - CUSTOM_GID=${CUSTOM_GID}
     ports:
       - "3000:3000" # Browser Sync
       - "3001:3001" # Browser Sync UI
@@ -81,6 +100,26 @@ services:
     networks:
       lde-network:
     user: ${CUSTOM_UID}:${CUSTOM_GID}
+
+  # PHP 5.6 ---------------------------------------------------
+  php56-fpm:
+    container_name: php56
+    hostname: php56
+    build:
+      context: ./php
+      dockerfile: ./56/Dockerfile
+      args:
+        - EXTRA_CMDS=${EXTRA_CMDS_PHP56}
+        - CUSTOM_USER_NAME=${CUSTOM_USER_NAME}
+        - CUSTOM_UID=${CUSTOM_UID}
+        - CUSTOM_GID=${CUSTOM_GID}
+    restart: ${DOCKER_RESTART}
+    volumes:
+      - ${DOCUMENTROOT}:/var/www/html:delegated
+    networks:
+      lde-network:
+    user: ${CUSTOM_UID}:${CUSTOM_GID}
+
   # PHPMyAdmin ---------------------------------------------------
   phpmyadmin:
     container_name: phpmyadmin
@@ -89,6 +128,7 @@ services:
     image: "phpmyadmin"
     environment:
       - PMA_HOST=mysql
+      - UPLOAD_LIMIT=256MB
     links:
       - mysql
     ports:
