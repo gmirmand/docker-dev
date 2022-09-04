@@ -1,4 +1,4 @@
-FROM wearepvtl/php-fpm-8.0:2
+FROM wearepvtl/php-fpm-8.0:latest
 
 LABEL maintainer.name="Pivotal Agency" \
       maintainer.email="tech@pvtl.io"
@@ -39,8 +39,14 @@ RUN eval $EXTRA_CMDS
 # Custom PHP.ini Config
 COPY ./conf/.gitkeep ./conf/custom.ini* /usr/local/etc/php/conf.d/zzb-custom.ini
 
-# Copy CRON's
+# Update permissions for supervisor and cron
+RUN chown ${CUSTOM_USER_NAME}:${CUSTOM_USER_NAME} /etc/supervisor/supervisord.pid \
+  && chmod gu+rw /var/run \
+  && chmod gu+s /usr/sbin/cron
+
+# Copy and enable CRON/s
 COPY ./80/Dockerfile ./80/custom_crontab* /root/
+RUN /usr/bin/crontab -u ${CUSTOM_USER_NAME} /root/custom_crontab
 
 ENTRYPOINT []
 CMD ["/usr/bin/supervisord"]

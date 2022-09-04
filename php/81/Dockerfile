@@ -1,4 +1,4 @@
-FROM wearepvtl/php-fpm-7.4:latest
+FROM wearepvtl/php-fpm-8.1:latest
 
 LABEL maintainer.name="Pivotal Agency" \
       maintainer.email="tech@pvtl.io"
@@ -45,7 +45,7 @@ RUN chown ${CUSTOM_USER_NAME}:${CUSTOM_USER_NAME} /etc/supervisor/supervisord.pi
   && chmod gu+s /usr/sbin/cron
 
 # Copy and enable CRON/s
-COPY ./74/Dockerfile ./74/custom_crontab* /root/
+COPY ./81/Dockerfile ./81/custom_crontab* /root/
 RUN /usr/bin/crontab -u ${CUSTOM_USER_NAME} /root/custom_crontab
 
 ENTRYPOINT []

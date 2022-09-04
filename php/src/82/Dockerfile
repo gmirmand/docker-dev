@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:8.2-rc-fpm
 
 LABEL maintainer.name="Pivotal Agency" \
       maintainer.email="tech@pvtl.io"
@@ -32,9 +32,9 @@ RUN apt update && apt install -y --no-install-recommends \
     zsh \
     fonts-powerline \
     powerline \
-  && yes '' | pecl install -f memcached redis xdebug mcrypt \
-  && docker-php-ext-install -j$(nproc) bcmath calendar exif intl mysqli opcache pdo_mysql soap xsl zip\
-  && docker-php-ext-enable mcrypt memcached redis xdebug\
+  && yes '' | pecl install -f memcached redis xdebug-3.2.0alpha2 mcrypt \
+  && docker-php-ext-install -j$(nproc) bcmath calendar exif intl mysqli opcache pdo_mysql soap xsl zip \
+  && docker-php-ext-enable mcrypt memcached redis xdebug \
   && mv /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini.DISABLE \
   && apt clean \
   && rm -rf /var/lib/apt/lists/*
@@ -42,14 +42,6 @@ RUN apt update && apt install -y --no-install-recommends \
 # Configure GD Library
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
   && docker-php-ext-install -j$(nproc) gd
-
-# Install Ioncube
-RUN cd /tmp \
-  && curl -o ioncube.tar.gz http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz \
-  && tar -xvvzf ioncube.tar.gz \
-  && mv ioncube/ioncube_loader_lin_$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;').so /usr/local/lib/php/extensions/* \
-  && rm -Rf ioncube.tar.gz ioncube \
-  && echo "zend_extension=ioncube_loader_lin_$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;').so" > /usr/local/etc/php/conf.d/00_docker-php-ext-ioncube_loader_lin_$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;').ini
 
 # Install Composer
 RUN curl --silent --show-error https://getcomposer.org/installer | php \
@@ -59,6 +51,20 @@ RUN curl --silent --show-error https://getcomposer.org/installer | php \
 # Install MailHog
 RUN curl -L -o /usr/bin/mhsendmail https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendmail_linux_amd64 \
   && chmod +x /usr/bin/mhsendmail
+
+# Install Yarn
+RUN curl -sS 'https://dl.yarnpkg.com/debian/pubkey.gpg' | apt-key add - \
+  && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+  && apt update \
+  && apt install -y --no-install-recommends yarn \
+  && apt clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# Install Node
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - \
+  && apt install -y --no-install-recommends nodejs \
+  && apt clean \
+  && rm -rf /var/lib/apt/lists/*
 
 # Install Wordpress CLI
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \

@@ -28,15 +28,15 @@ It includes all the required dependencies for everyday PHP development with comm
 *Default:*
 
 - Apache
-- PHP 8.0
+- PHP 8.1
     - Composer (latest)
-    - Node.js (14.x) & NPM (latest)*
+    - Node.js (16.x) & NPM (latest)*
     - Yarn (latest)*
     - PHPCS (with Wordpress code standards added)*
     - Wordpress CLI*
     - ZSH*
 - Mailhog (latest)
-- MariaDB 10.2
+- MariaDB 10.3
 
 *Optional:*
 
@@ -52,24 +52,25 @@ The environment features clever *domain mapping* to allow you to run code for va
 
 * __http://classic-php.php56.{APACHE_HOSTNAME}__ (eg. http://classic-php.php56.localhost)
     * Will map to `~/Sites/classic-php` and use PHP 5.6
-* __http://laravel.php70.pub.{APACHE_HOSTNAME}__
-    * Will map to `~/Sites/laravel/public` and use PHP 7.0
-* __http://php-project.php80.{APACHE_HOSTNAME}__
-    * Will map to `~/Sites/php-project` and use PHP 8.0
+* __http://laravel.php74.pub.{APACHE_HOSTNAME}__
+    * Will map to `~/Sites/laravel/public` and use PHP 7.4
 * __http://another-project.{APACHE_HOSTNAME}__
-    * Will map to `~/Sites/another-project` and use the default version of PHP (currently 7.4)
+    * Will map to `~/Sites/another-project` and use the default version of PHP (currently 8.0)
+
+Optional services (eg. PHP 5.6, PHP 7.4) can be added in the `.env` file by appending them to the `COMPOSE_FILE` option. See `.env.example` for an example of the syntax.
 
 ---
 
 ## Prerequisites ⚠️
 
-* Your machine must be running MacOS, Windows 10 _Pro_ or Linux
-* Your CPU must support virtualisation (Intel VT-x or AMD-V)
-* You must have [Docker Compose](https://docs.docker.com/compose/install/) (version 1.25.0+) and Docker installed & running
+You'll first need to install Docker Desktop (or Docker on Linux).
+
 
 ---
 
 ## Installation 🚀
+
+> On Windows, we strongly recommend running these commands inside a WSL2 container for best performance
 
 ```bash
 # Clone the repo
@@ -130,6 +131,27 @@ The Docker Engine must be running and commands must be run within this repo's ro
 
 ---
 
+## Daily Shortcuts ⚡️
+
+While the above commands work, they're a bit tedious to type out on a daily basis. If you're using macOS, Linux or WSL you can set up Bash or ZSH aliases to make life easier.
+
+Edit either `~/.bashrc` or  `~/.zshrc` and paste this code block in at the bottom of the file:
+
+```
+# Usage: "devup" or "devdown"
+# Just update the path to point to the actual location of your docker-dev folder
+alias devup='(cd /home/manuel/docker-dev && docker compose start)'
+alias devdown='(cd /home/manuel/docker-dev && docker compose stop)'
+
+# Usage: "devin 81"
+# Simply change the numbers for your preferred PHP version (assuming it's installed/enabled)
+devin() {
+  docker exec -it php$1 bash
+}
+```
+
+---
+
 ## Further Reading
 
 - 🚥 [Connections](docs/connections.md)
@@ -142,9 +164,11 @@ The Docker Engine must be running and commands must be run within this repo's ro
     - [localhost isn't working](docs/faqs.md)
     - [Crons](docs/faqs.md#how-do-i-setuprun-crons)
     - [BrowserSync](docs/faqs.md#how-do-i-get-browsersync-working-from-inside-a-container)
+    - [CURL requests from/to LDE sites](docs/faqs.md#curl-requests-from-an-lde-site-to-another-lde-site)
     - [HTTPS](docs/faqs.md#how-do-i-use-httpsssl-for-my-local-containers)
     - [BlackFire](docs/faqs.md#how-do-i-use-blackfire)
     - [Mapping a Custom Hostname to a local site](docs/faqs.md#mapping-a-custom-hostname-to-a-local-site)
     - [Changing your MySQL Root password](docs/faqs.md#changing-your-mysql-root-password)
     - [Adding custom PHP configuration](docs/faqs.md#adding-custom-php-configuration)
     - [Using Redis as a session handler](docs/faqs.md#using-redis-as-a-session-handler)
+    - [How do I change the 'default' PHP container?](docs/faqs.md#how-do-i-change-the-default-php-container)
